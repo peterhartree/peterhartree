@@ -11,8 +11,14 @@
     </style>
   </head>
   <body>
-    <p>Random doc:</p>
+    <p>3 random docs:</p>
     <div id="random_doc" style="margin-bottom: 25px;"></div>
+
+    <p>3 least recently modified:</p>
+    <div id="three_least_recently_viewed"></div>
+
+    <p>5 most recently modified:</p>
+    <div id="five_most_recently_viewed"></div>
 
     <!--Add buttons to initiate auth sequence and sign out-->
     <button id="authorize_button" style="display: none;">Authorize</button>
@@ -114,18 +120,31 @@
         gapi.client.drive.files.list({
           'pageSize': 1000,
           'q': "name contains 'notes]'",
-          'fields': "nextPageToken, files(id, name, webViewLink)"
+          'fields': "nextPageToken, files(id, name, webViewLink,modifiedTime)",
+          'orderBy': 'modifiedTime'
         }).then(function(response) {
           var files = response.result.files;
-          var randomFile = files[Math.floor(Math.random()*files.length)];
+          var randomFile1 = files[Math.floor(Math.random()*files.length)];
+          var randomFile2 = files[Math.floor(Math.random()*files.length)];
+          var randomFile3 = files[Math.floor(Math.random()*files.length)];
 
           var randomDoc = document.getElementById('random_doc');
-          randomDoc.innerHTML = '<a href="' + randomFile.webViewLink + '">' + randomFile.name + '</a>';
+          randomDoc.innerHTML = '<ul><li><a href="' + randomFile1.webViewLink + '">' + randomFile1.name + '</a></li><li><a href="' + randomFile2.webViewLink + '">' + randomFile2.name + '</a></li><li><a href="' + randomFile3.webViewLink + '">' + randomFile3.name + '</a></li></ul>';
+
+          var threeLeastRecentlyViewed = document.getElementById('three_least_recently_viewed');
+
+          threeLeastRecentlyViewed.innerHTML = '<ul><li><a href="' + files[0].webViewLink + '">' + files[0].name + '</a></li><li><a href="' + files[1].webViewLink + '">' + files[1].name + '</a></li><li><a href="' + files[2].webViewLink + '">' + files[2].name + '</a></li></ul>';
+
+          var fiveMostRecentlyViewed = document.getElementById('five_most_recently_viewed');
+
+          fiveMostRecentlyViewed.innerHTML = '<ul><li><a href="' + files[files.length-1].webViewLink + '">' + files[files.length-1].name + '</a></li><li><a href="' + files[files.length-2].webViewLink + '">' + files[files.length-2].name + '</a></li><li><a href="' + files[files.length-3].webViewLink + '">' + files[files.length-3].name + '</a></li><li><a href="' + files[files.length-4].webViewLink + '">' + files[files.length-4].name + '</a></li><li><a href="' + files[files.length-5].webViewLink + '">' + files[files.length-5].name + '</a></li></ul>';
 
           if (files && files.length > 0) {
             for (var i = 0; i < files.length; i++) {
-              var file = files[i];
-              console.log(file);
+              if(i < 3) {
+                var file = files[i];
+                console.log(file);
+              }
             }
           }
         });
